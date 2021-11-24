@@ -1,3 +1,7 @@
+// These variables can be tweaked for performance reasons
+const numberOfSessions = 334;
+const timeoutMilliseconds = 1500000;
+
 const puppeteer = require('puppeteer');
 const roomCode = process.argv[2];
 const url = 'https://jackbox.tv';
@@ -5,9 +9,10 @@ process.setMaxListeners(Infinity);
 if (!roomCode) {
     throw "Please provide room code as a first argument";
 }
-async function run (sessionId) {
-    const browser = await puppeteer.launch();
+async function run (browser, sessionId) {
     const page = await browser.newPage();
+    // Configure the navigation timeout
+    await page.setDefaultNavigationTimeout(0);
     //turns request interceptor on
     await page.setRequestInterception(true);
 
@@ -23,24 +28,27 @@ async function run (sessionId) {
     await page.goto(url);
 
     // enter room code
-    await page.waitForSelector("#roomcode",{timeout:500000});
+    await page.waitForSelector("#roomcode",{timeout:timeoutMilliseconds});
     await page.type("#roomcode", roomCode);
 
     // enter user name
-    await page.waitForSelector("#username",{timeout:500000});
+    await page.waitForSelector("#username",{timeout:timeoutMilliseconds});
     await page.type("#username", "User" + sessionId);
 
     // click "Join Audience" button once available
-    await page.waitForSelector(".audience",{timeout:500000});
+    await page.waitForSelector(".audience",{timeout:timeoutMilliseconds});
     await page.click("#button-join");
     
     // When game ends, browser displays "DISCONNECTED", so we are done
-    await page.waitForXPath('//*[contains(text(), "DISCONNECTED")]',{timeout:500000});
+    await page.waitForXPath('//*[contains(text(), "DISCONNECTED")]',{timeout:timeoutMilliseconds});
 
     browser.close();
 }
 async function runAll(){
-    const sessions = [...Array(100).keys()].map(x => run(x)); // set up 1000 sessions
+    const browser = await puppeteer.launch();
+     // set up the sessions
+    const sessions = [...Array(numberOfSessions).keys()].map(x => run(browser, x));
+    // run all the sessions in parallel
     await Promise.all(sessions);
 }
 runAll();
