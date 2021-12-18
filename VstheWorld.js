@@ -1,13 +1,15 @@
-// These variables can be tweaked for performance reasons
-const numberOfSessions = 334;
-const timeoutMilliseconds = 1500000;
+const timeoutMilliseconds = 1500000; // This variable can be tweaked for performance reasons
 
 const puppeteer = require('puppeteer');
 const roomCode = process.argv[2];
+const numberOfSessions = process.argv[3];
 const url = 'https://jackbox.tv';
 process.setMaxListeners(Infinity);
 if (!roomCode) {
     throw "Please provide room code as a first argument";
+}
+if(!numberOfSessions){
+    numberOfSessions = 334; // a default number that works for me
 }
 async function run (browser, sessionId) {
     const page = await browser.newPage();
