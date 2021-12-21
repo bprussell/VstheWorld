@@ -12,7 +12,7 @@ Open Powershell, navigate to the directory where the repo was cloned, and use No
 
 # Running the Script
 
-This script uses a large amount of CPU and RAM. I was not able to run all 1000 browser sessions on one machine. I was able to get up to 768 sessions, and at that point, it was not adding any more members to the audience. You will likely need to run this script on multiple machines to get the achievement.
+This script uses a large amount of CPU and RAM. I was not able to run all 1000 browser sessions on one machine with 24GB of RAM. I recruited a friend to help, and he ran a couple instances of the script as well.
 
 Open the VstheWorld.js file in a text editor, and update the `numberOfSessions` value at the top of the file to the number of browser sessions your machine can handle. This might take some trial and error. You can also increase the `timeoutMilliseconds` value if the browsers time out before all 1000 sessions are reached.
 
@@ -24,6 +24,6 @@ Open Powershell and navigate to the directory where the VstheWorld.js file is lo
 
     node VstheWorld.js ABCD
 
-This will start opening browser tabs in the background. Let it run for a bit, then unpause the game to see how many users are in the audience. If this number keeps going up, keep going. If your computer still has RAM available, open a new instance of Powershell and run the script again. I was not able to run one Powershell instance with the `numberOfSessions` set to 1000 as it consumed too much CPU, but I was able to run 3 instances with it set to 334. However, I was running out of RAM and it stopped making new connections when the audience size was 768. Doing this same process on another machine should get me over the hump, but I have not had the opportunity to try that yet.
+This will start opening browser tabs in the background. Let it run for a bit, then unpause the game to see how many users are in the audience. If this number keeps going up, keep going. If your computer still has RAM available, open a new instance of Powershell and run the script again. I was not able to run one Powershell instance with the `numberOfSessions` set to 1000 as it consumed too much CPU, but I was able to run 3 instances with it set to 334. My friend ran 2 instances of the script set to 500 sessions each.
 
 If you manage to get 1000 sessions running, unpause the game and you should get the achievement. Congratulations!
