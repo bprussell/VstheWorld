@@ -3,6 +3,8 @@ This is a solution to help with the "The Pole Mine: Vs the World" achievement in
 
 This achievement requires the player to play a game of The Pole Mine in streamer mode with an audience of at least 1000. This application opens a large number of headless Chrome browser tabs and logs into the game corresponding to the room code provided when running the script.
 
+The following instructions are for running on a Windows machine. If you have access to AWS and want to run this script in the cloud, refer to [these instructions](aws_ec2.md) by [@Pzelnip](https://github.com/pzelnip).
+
 # Installation
 Install the latest version of NodeJS at https://nodejs.org/
 
