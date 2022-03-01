@@ -6,6 +6,17 @@ const roomCode = args["_"][0];
 const numberOfSessions = args["sessions"] || 334;
 const timeoutMilliseconds = args["timeout"] || 1500000;
 
+if (args["help"]) {
+  console.log(`
+    Example usage:
+
+      node VstheWorld.js ROOM_CODE [--sessions 334] [--timeout 1500000]
+
+    Github: https://github.com/bprussell/VstheWorld
+  `)
+  return;
+}
+
 if (!roomCode) {
     throw "Please provide room code as a first argument";
 }
