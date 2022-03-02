@@ -8,6 +8,8 @@ The following instructions are for running on a Windows machine. If you have acc
 # Installation
 Install the latest version of NodeJS at https://nodejs.org/
 
+Clone this repository to your machine.
+
 Open Powershell, navigate to the directory where the repo was cloned, and use Node Package Manager to install any dependencies (like Puppeteer).
 
 ```sh
