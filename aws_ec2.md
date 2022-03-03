@@ -35,13 +35,13 @@ EC2 dashboard).
 
 Install npm: <https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-up-node-on-ec2-instance.html>
 
-Install puppeteer:
+Install dependencies:
 
 ```shell
-npm i puppeteer --save
+npm i
 ```
 
-Install dependencies for puppeteer:
+Install dependencies for puppeteer (note: this may have been accomplished in the previous step):
 
 ```shell
 sudo yum install alsa-lib.x86_64 atk.x86_64 cups-libs.x86_64 gtk3.x86_64 ipa-gothic-fonts libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXrandr.x86_64 libXScrnSaver.x86_64 libXtst.x86_64 pango.x86_64 xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-fonts-cyrillic xorg-x11-fonts-misc xorg-x11-fonts-Type1 xorg-x11-utils
@@ -59,14 +59,15 @@ Clone the repo:
 git clone https://github.com/bprussell/VstheWorld.git
 ```
 
-## Tweak the Script
-
-Edit the `VstheWorld.js` script and change the `numberOfSessions` to 2.
-
 ## Test It Out
 
-Start a game in streamer mode, and run the script with the room code.  Verify
-that script executes and 2 audience are added.
+Try the script with 2 sessions. Start a game in streamer mode, and run:
+
+```shell
+node start ABCD -- --sessions 2
+```
+
+Verify that script executes and 2 audience are added.
 
 ## Spin Up Another Instance
 
@@ -90,12 +91,15 @@ EC2 instances are billed by the hour.
 
 ## Let Er Rip
 
-Spin up both instances.  SSH into them again and edit the `VstheWorld.js` script
-and change `numberOfSessions` to 250 (since you're running two instances, you'll
-need to do this on both instances).
+Spin up both instances.  SSH into them again and run the script with the room code, 
+this time using 250 sessions. Run this script:
 
-Run the script with the room code, and verify you get up to 500 audience members
-(250 x 2).
+```shell
+node start ABCD -- --sessions 250
+```
+
+Since you're running two instances, you'll need to do this on both instances.
+Verify you get up to 500 audience members (250 x 2).
 
 Once that happens, background the `VstheWorld.js` script by hitting `ctrl+z`.
 This leaves it running with the 250 audience members. Now start up the script
