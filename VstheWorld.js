@@ -1,14 +1,29 @@
-// These variables can be tweaked for performance reasons
-const numberOfSessions = 334;
-const timeoutMilliseconds = 1500000;
+const puppeteer = require("puppeteer");
+const args = require("minimist")(process.argv.slice(2));
 
-const puppeteer = require('puppeteer');
-const roomCode = process.argv[2];
-const url = 'https://jackbox.tv';
-process.setMaxListeners(Infinity);
+const roomCode = args["_"][0];
+// These variables can be tweaked for performance reasons
+const numberOfSessions = args["sessions"] || 334;
+const timeoutMilliseconds = args["timeout"] || 1500000;
+
+if (args["help"]) {
+  console.log(`
+    Example usage:
+
+      node VstheWorld.js ROOM_CODE [--sessions 334] [--timeout 1500000]
+
+    Github: https://github.com/bprussell/VstheWorld
+  `)
+  return;
+}
+
 if (!roomCode) {
     throw "Please provide room code as a first argument";
 }
+
+const url = "https://jackbox.tv";
+process.setMaxListeners(Infinity);
+
 async function run(browser, sessionId) {
     console.log('starting');
     const page = await browser.newPage();
