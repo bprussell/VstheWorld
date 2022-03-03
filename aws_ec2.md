@@ -64,7 +64,7 @@ git clone https://github.com/bprussell/VstheWorld.git
 Try the script with 2 sessions. Start a game in streamer mode, and run:
 
 ```shell
-node start ABCD -- --sessions 2
+npm start ABCD -- --sessions 2
 ```
 
 Verify that script executes and 2 audience are added.
@@ -95,7 +95,7 @@ Spin up both instances.  SSH into them again and run the script with the room co
 this time using 250 sessions. Run this script:
 
 ```shell
-node start ABCD -- --sessions 250
+npm start ABCD -- --sessions 250
 ```
 
 Since you're running two instances, you'll need to do this on both instances.
