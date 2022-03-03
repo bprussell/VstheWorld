@@ -10,7 +10,7 @@ if (args["help"]) {
   console.log(`
     Example usage:
 
-      node VstheWorld.js ROOM_CODE [--sessions 334] [--timeout 1500000]
+      npm start ROOM_CODE -- [--sessions 334] [--timeout 1500000]
 
     Github: https://github.com/bprussell/VstheWorld
   `)
@@ -33,7 +33,7 @@ async function run(browser, sessionId) {
     //turns request interceptor on
     await page.setRequestInterception(true);
 
-    //if the page makes a  request to a resource type of image or stylesheet then abort that request
+    //if the page makes a request to a resource type of image then abort that request
     page.on('request', request => {
         if (request.resourceType() === 'image')
             request.abort();
@@ -63,7 +63,7 @@ async function run(browser, sessionId) {
 
     // When game ends, browser displays "DISCONNECTED", so we are done
     await page.waitForXPath('//*[contains(text(), "DISCONNECTED")]', { timeout: timeoutMilliseconds });
-    console.log('discoed');
+    console.log('disconnected');
 
     browser.close();
 }
