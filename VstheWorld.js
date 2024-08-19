@@ -5,9 +5,12 @@ const args = require("minimist")(process.argv.slice(2));
 const roomCode = args["_"][0];
 // These variables can be tweaked for performance reasons
 const numberOfSessions = args["sessions"] || 334;
+const sessionName = args["sessionname"] || '';
 const timeoutMilliseconds = args["timeout"] || 1500000;
 
 let counter = 0;
+
+let hasBad = false;
 
 if (args["help"]) {
   console.log(`
@@ -26,6 +29,27 @@ if (!roomCode) {
 
 const url = "https://jackbox.tv";
 process.setMaxListeners(Infinity);
+
+// Timeout function
+function timeoutPromise(ms) {
+  return new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms));
+}
+
+async function runWithTimeout(browser, sessionId) {
+  try {
+    await Promise.race([
+      run(browser, sessionId),
+      timeoutPromise(5000) // 5 seconds timeout adjust as necessary
+    ]);
+  } catch (error) {
+    if (error.message === 'Timeout') {
+      hasBad = true;
+      console.log(`Session ${sessionId} timed out.`);
+    } else {
+      throw error; // Re-throw other errors
+    }
+  }
+}
 
 async function run(browser, sessionId) {
   console.log('starting');
@@ -62,8 +86,8 @@ async function run(browser, sessionId) {
 
   // enter user name
   await page.waitForSelector("#username", { timeout: timeoutMilliseconds });
-  await page.type("#username", "User" + sessionId);
-  console.log('entered username ' + sessionId);
+  await page.type("#username", "B" + sessionName + sessionId);
+  console.log('entered username B' + sessionName + sessionId);
 
   // click "Join Audience" button once available
   await page.waitForSelector(".audience", { timeout: timeoutMilliseconds });
@@ -72,16 +96,43 @@ async function run(browser, sessionId) {
   console.log(`joined audience (${counter} total)`);
 
   // When game ends, browser displays "DISCONNECTED", so we are done
-  await page.waitForXPath('//*[contains(text(), "DISCONNECTED")]', { timeout: timeoutMilliseconds });
-  console.log('disconnected');
+  // await page.waitForXPath('//*[contains(text(), "DISCONNECTED")]', { timeout: timeoutMilliseconds });
+  // console.log('disconnected');
 
-  browser.close();
+  // browser.close();
 }
+// async function runAll() {
+//   const browser = await puppeteer.launch();
+//   // set up the sessions
+//   const sessions = [...Array(numberOfSessions).keys()].map(x => run(browser, x));
+//   // run all the sessions in parallel
+//   await Promise.all(sessions);
+// }
+
+
+// Delay function
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function runAll() {
   const browser = await puppeteer.launch();
-  // set up the sessions
-  const sessions = [...Array(numberOfSessions).keys()].map(x => run(browser, x));
-  // run all the sessions in parallel
-  await Promise.all(sessions);
+
+
+  for (let i = 0; i < numberOfSessions; i++) {
+    if (!hasBad) {
+      await runWithTimeout(browser, i);
+      // await delay(1000); // 1 second delay between sessions
+    } else {
+      console.log("waiting a few minutes...");
+      await delay(315000);
+      console.log("waiting complete, trying again...");
+      hasBad = false;
+    }
+  }
+
+  // await browser.close();
 }
+
+
 runAll();
