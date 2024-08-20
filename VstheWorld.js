@@ -7,6 +7,8 @@ const roomCode = args["_"][0];
 const numberOfSessions = args["sessions"] || 334;
 const sessionName = args["sessionname"] || '';
 const timeoutMilliseconds = args["timeout"] || 1500000;
+const checktimeMilliseconds = args["checktime"] || 5000;
+
 
 let counter = 0;
 
@@ -16,7 +18,7 @@ if (args["help"]) {
   console.log(`
     Example usage:
 
-      npm start ROOM_CODE -- [--sessions 334] [--timeout 1500000]
+      npm start ROOM_CODE -- [--sessions 334] [--timeout 1500000] [--sessionname a]
 
     Github: https://github.com/bprussell/VstheWorld
   `)
@@ -39,7 +41,7 @@ async function runWithTimeout(browser, sessionId) {
   try {
     await Promise.race([
       run(browser, sessionId),
-      timeoutPromise(5000) // 5 seconds timeout adjust as necessary
+      timeoutPromise(checktimeMilliseconds)
     ]);
   } catch (error) {
     if (error.message === 'Timeout') {
@@ -86,8 +88,8 @@ async function run(browser, sessionId) {
 
   // enter user name
   await page.waitForSelector("#username", { timeout: timeoutMilliseconds });
-  await page.type("#username", "B" + sessionName + sessionId);
-  console.log('entered username B' + sessionName + sessionId);
+  await page.type("#username", "U" + sessionName + sessionId);
+  console.log('entered username U' + sessionName + sessionId);
 
   // click "Join Audience" button once available
   await page.waitForSelector(".audience", { timeout: timeoutMilliseconds });
@@ -111,7 +113,7 @@ async function runAll() {
     if (!hasBad) {
       await runWithTimeout(browser, i);
     } else {
-      console.log("waiting a few minutes...");
+      console.log("waiting five minutes...");
       await delay(315000);
       console.log("waiting complete, trying again...");
       hasBad = false;
