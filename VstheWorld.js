@@ -1,16 +1,24 @@
 const puppeteer = require("puppeteer");
+const { heads } = require("./headers");
 const args = require("minimist")(process.argv.slice(2));
 
 const roomCode = args["_"][0];
 // These variables can be tweaked for performance reasons
 const numberOfSessions = args["sessions"] || 334;
+const sessionName = args["sessionname"] || '';
 const timeoutMilliseconds = args["timeout"] || 1500000;
+const checktimeMilliseconds = args["checktime"] || 5000;
+
+
+let counter = 0;
+
+let hasBad = false;
 
 if (args["help"]) {
   console.log(`
     Example usage:
 
-      npm start ROOM_CODE -- [--sessions 334] [--timeout 1500000]
+      npm start ROOM_CODE -- [--sessions 334] [--timeout 1500000] [--sessionname a]
 
     Github: https://github.com/bprussell/VstheWorld
   `)
@@ -18,60 +26,101 @@ if (args["help"]) {
 }
 
 if (!roomCode) {
-    throw "Please provide room code as a first argument";
+  throw "Please provide room code as a first argument";
 }
 
 const url = "https://jackbox.tv";
 process.setMaxListeners(Infinity);
 
+// Timeout function
+function timeoutPromise(ms) {
+  return new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms));
+}
+
+async function runWithTimeout(browser, sessionId) {
+  try {
+    await Promise.race([
+      run(browser, sessionId),
+      timeoutPromise(checktimeMilliseconds)
+    ]);
+  } catch (error) {
+    if (error.message === 'Timeout') {
+      hasBad = true;
+      console.log(`Session ${sessionId} timed out.`);
+    } else {
+      throw error; // Re-throw other errors
+    }
+  }
+}
+
 async function run(browser, sessionId) {
-    console.log('starting');
-    const page = await browser.newPage();
-    console.log('got page');
-    // Configure the navigation timeout
-    await page.setDefaultNavigationTimeout(0);
-    //turns request interceptor on
-    await page.setRequestInterception(true);
+  console.log('starting');
+  const page = await browser.newPage();
+  console.log('got page');
+  // Configure the navigation timeout
+  await page.setDefaultNavigationTimeout(0);
 
-    //if the page makes a request to a resource type of image then abort that request
-    page.on('request', request => {
-        if (request.resourceType() === 'image')
-            request.abort();
-        else
-            request.continue();
-    });
+  //Pick a random UA and apply it
+  const userAgent = heads[Math.floor(Math.random() * heads.length)];
 
-    console.log('about to go to jackbox');
-    // go to jackbox.tv
-    await page.goto(url);
-    console.log('got jackbox page');
+  await page.setUserAgent(userAgent);
 
-    // enter room code
-    await page.waitForSelector("#roomcode", { timeout: timeoutMilliseconds });
-    await page.type("#roomcode", roomCode);
-    console.log('entered room code');
+  //turns request interceptor on
+  await page.setRequestInterception(true);
 
-    // enter user name
-    await page.waitForSelector("#username", { timeout: timeoutMilliseconds });
-    await page.type("#username", "User" + sessionId);
-    console.log('entered username ' + sessionId);
+  //if the page makes a request to a resource type of image then abort that request
+  page.on('request', request => {
+    if (request.resourceType() === 'image')
+      request.abort();
+    else
+      request.continue();
+  });
 
-    // click "Join Audience" button once available
-    await page.waitForSelector(".audience", { timeout: timeoutMilliseconds });
-    await page.click("#button-join");
-    console.log('joined audience');
+  console.log('about to go to jackbox');
+  // go to jackbox.tv
+  await page.goto(url);
+  console.log('got jackbox page');
 
-    // When game ends, browser displays "DISCONNECTED", so we are done
-    await page.waitForXPath('//*[contains(text(), "DISCONNECTED")]', { timeout: timeoutMilliseconds });
-    console.log('disconnected');
+  // enter room code
+  await page.waitForSelector("#roomcode", { timeout: timeoutMilliseconds });
+  await page.type("#roomcode", roomCode);
+  console.log('entered room code');
 
-    browser.close();
+  // enter user name
+  await page.waitForSelector("#username", { timeout: timeoutMilliseconds });
+  await page.type("#username", "U" + sessionName + sessionId);
+  console.log('entered username U' + sessionName + sessionId);
+
+  // click "Join Audience" button once available
+  await page.waitForSelector(".audience", { timeout: timeoutMilliseconds });
+  await page.click("#button-join");
+  counter++;
+  console.log(`joined audience (${counter} total)`);
+
 }
+
+
+// Delay function
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function runAll() {
-    const browser = await puppeteer.launch();
-    // set up the sessions
-    const sessions = [...Array(numberOfSessions).keys()].map(x => run(browser, x));
-    // run all the sessions in parallel
-    await Promise.all(sessions);
+  const browser = await puppeteer.launch();
+
+
+  for (let i = 0; i < numberOfSessions; i++) {
+    if (!hasBad) {
+      await runWithTimeout(browser, i);
+    } else {
+      console.log("waiting five minutes...");
+      await delay(315000);
+      console.log("waiting complete, trying again...");
+      hasBad = false;
+    }
+  }
+
 }
+
+
 runAll();
