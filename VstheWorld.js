@@ -95,19 +95,7 @@ async function run(browser, sessionId) {
   counter++;
   console.log(`joined audience (${counter} total)`);
 
-  // When game ends, browser displays "DISCONNECTED", so we are done
-  // await page.waitForXPath('//*[contains(text(), "DISCONNECTED")]', { timeout: timeoutMilliseconds });
-  // console.log('disconnected');
-
-  // browser.close();
 }
-// async function runAll() {
-//   const browser = await puppeteer.launch();
-//   // set up the sessions
-//   const sessions = [...Array(numberOfSessions).keys()].map(x => run(browser, x));
-//   // run all the sessions in parallel
-//   await Promise.all(sessions);
-// }
 
 
 // Delay function
@@ -122,7 +110,6 @@ async function runAll() {
   for (let i = 0; i < numberOfSessions; i++) {
     if (!hasBad) {
       await runWithTimeout(browser, i);
-      // await delay(1000); // 1 second delay between sessions
     } else {
       console.log("waiting a few minutes...");
       await delay(315000);
@@ -131,7 +118,6 @@ async function runAll() {
     }
   }
 
-  // await browser.close();
 }
 
 
