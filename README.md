@@ -36,10 +36,12 @@ npm start ABCD
 
 This script uses a large amount of CPU and RAM. I was not able to run all 1000 browser sessions on one machine with 24GB of RAM. I recruited a friend to help, and he ran a couple instances of the script as well.
 
-You can also specify how many sessions your machine can handle. This might take some trial and error. You can also increase the timeout value (in milliseconds) if the browsers time out before all 1000 sessions are reached.
+You can specify how many sessions your machine can handle. This might take some trial and error.
+You can increase the timeout value (in milliseconds) if the browsers time out before all 1000 sessions are reached.
+You can also specify the session name, so if you are running multiple instances of this script, the audience member names won't overlap.
 
 ```sh
-npm start ABCD -- --sessions 500 --timeout 2000000
+npm start ABCD -- --sessions 500 --timeout 2000000 --sessionname a
 ```
 
 The script opens browser tabs in the background. Let it run for a bit, then unpause the game to see how many users are in the audience. If this number keeps going up, keep going. If your computer still has RAM available, open a new instance of Powershell and run the script again. I was not able to run one Powershell instance with 1000 sessions as it consumed too much CPU, but I was able to run 3 instances with it set to 334. My friend ran 2 instances of the script set to 500 sessions each.
