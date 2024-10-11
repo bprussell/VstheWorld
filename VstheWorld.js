@@ -18,7 +18,7 @@ if (args["help"]) {
   console.log(`
     Example usage:
 
-      npm start ROOM_CODE -- [--sessions 334] [--timeout 1500000] [--sessionname a]
+      npm start ROOM_CODE -- [--sessions 334] [--timeout 1500000] [--sessionname a] [--checktime 5000]
 
     Github: https://github.com/bprussell/VstheWorld
   `)
